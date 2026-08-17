@@ -405,7 +405,9 @@ resource "aws_iam_policy" "cd" {
         ]
         Resource = [
           module.ecsservice.service_id,
+          module.email_service.service_id,
           "arn:aws:ecs:${local.aws_region}:${local.aws_account}:task-definition/${module.ecsservice.task_def_family}:*",
+          "arn:aws:ecs:${local.aws_region}:${local.aws_account}:task-definition/${module.email_service.task_def_family}:*",
         ]
       },
       {
