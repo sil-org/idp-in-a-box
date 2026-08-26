@@ -166,24 +166,6 @@ moved {
   to   = cloudflare_dns_record.sspdns_intermediate
 }
 
-resource "cloudflare_dns_record" "alternate_hostnames" {
-  count = var.create_dns_record ? length(var.additional_hostnames) : 0
-
-  zone_id = data.cloudflare_zone.domain.id
-  name    = var.additional_hostnames[count.index]
-  content = var.alb_dns_name
-  type    = "CNAME"
-  proxied = true
-  ttl     = 1
-}
-
-data "cloudflare_zone" "domain" {
-  filter = {
-    name = var.cloudflare_domain
-  }
-}
-
-
 /*
  * Create ECS role
  */
