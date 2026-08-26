@@ -35,10 +35,10 @@ resource "aws_alb_listener_rule" "ssp" {
 
   condition {
     host_header {
-      values = [
+      values = concat([
         "${var.subdomain}.${var.cloudflare_domain}",
         "${local.subdomain_with_region}.${var.cloudflare_domain}"
-      ]
+      ], var.additional_hostnames)
     }
   }
 
@@ -80,7 +80,8 @@ locals {
     app_env                     = var.app_env
     app_name                    = var.app_name
     aws_region                  = local.aws_region
-    base_url                    = "https://${var.subdomain}.${var.cloudflare_domain}/"
+    base_url                    = coalesce(var.base_url, "https://${var.subdomain}.${var.cloudflare_domain}/")
+    trusted_url_domains         = var.trusted_url_domains
     cloudwatch_log_group_name   = var.cloudwatch_log_group_name
     docker_image                = var.docker_image
     enable_debug                = var.enable_debug
@@ -165,13 +166,11 @@ moved {
   to   = cloudflare_dns_record.sspdns_intermediate
 }
 
-
 data "cloudflare_zone" "domain" {
   filter = {
     name = var.cloudflare_domain
   }
 }
-
 
 /*
  * Create ECS role
