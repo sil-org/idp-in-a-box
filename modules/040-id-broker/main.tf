@@ -283,7 +283,7 @@ module "email_service" {
   service_name       = "${var.idp_name}-${var.app_name}-email"
   service_env        = var.app_env
   container_def_json = local.email_task_def
-  desired_count      = 1
+  desired_count      = var.desired_count == 0 ? 0 : 1
   task_role_arn      = module.ecs_role.role_arn
   execution_role_arn = var.task_execution_role_arn
   memory             = var.email_task_memory
