@@ -167,7 +167,7 @@ moved {
 }
 
 resource "cloudflare_dns_record" "alternate_hostnames" {
-  count = length(var.additional_hostnames)
+  count = var.create_dns_record ? length(var.additional_hostnames) : 0
 
   zone_id = data.cloudflare_zone.domain.id
   name    = var.additional_hostnames[count.index]
