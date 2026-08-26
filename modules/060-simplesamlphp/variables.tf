@@ -261,3 +261,38 @@ variable "task_execution_role_arn" {
   EOT
   type        = string
 }
+
+variable "additional_hostnames" {
+  description = <<-EOT
+    A list of additional hostnames to allow for the ALB listener rule. This is useful for allowing
+    multiple hostnames to point to the same SSP IdP service. Each hostname will be added as a CNAME
+    record in Cloudflare pointing to the ALB DNS name. Each entry should include the top-level 
+    domain. Metadata for each hostname should be added to the saml2-idp-hosted.php metadata 
+    configuration file.
+  EOT
+  type        = list(string)
+  default     = []
+}
+
+variable "base_url" {
+  description = <<-EOT
+    Base URL for the SSP IdP service. If not provided, it will be constructed from the subdomain and 
+    Cloudflare domain. This is passed to SimpleSAMLphp as the `baseurlpath` configuration parameter, 
+    which is used to generate URLs for SAML responses and other links. It should include the protocol
+    (http or https) and end with a trailing slash, or it can be a relative path if `trusted_url_domains`
+    is set.
+  EOT
+  type        = string
+  default     = null
+}
+
+variable "trusted_url_domains" {
+  description = <<-EOT
+    A comma-separated list of trusted domains for the SSP IdP service. If provided, it will be passed to
+    SimpleSAMLphp as the `trusted.url.domains` configuration parameter, which is used to validate URLs before
+    any redirect. This must be set if `base_url` is a relative path. Note that the special value "NULL" 
+    is converted to a PHP null value, which disables the trusted URL domains check in SimpleSAMLphp.
+  EOT
+  type        = string
+  default     = "NULL"
+}
