@@ -272,14 +272,6 @@ variable "additional_hostnames" {
   EOT
   type        = list(string)
   default     = []
-
-  validation {
-    condition = alltrue([
-      for h in var.additional_hostnames :
-      h != "${var.subdomain}.${var.cloudflare_domain}"
-    ])
-    error_message = "Additional hostname must not duplicate the primary hostname."
-  }
 }
 
 variable "base_url" {
