@@ -266,12 +266,23 @@ variable "additional_hostnames" {
   description = <<-EOT
     A list of additional hostnames to allow for the ALB listener rule. This is useful for allowing
     multiple hostnames to point to the same SSP IdP service. Each hostname will be added as a CNAME
-    record in Cloudflare pointing to the ALB DNS name. Each entry should include the top-level 
-    domain. Metadata for each hostname should be added to the saml2-idp-hosted.php metadata 
-    configuration file.
+    record in Cloudflare pointing to the ALB DNS name. Each entry must be a fully-qualified domain name
+    (FQDN) within the Cloudflare zone configured by `cloudflare_domain`. Metadata for each hostname 
+    should be added to the saml2-idp-hosted.php metadata configuration file.
   EOT
   type        = list(string)
   default     = []
+
+  validation {
+    condition = alltrue([
+      for h in var.additional_hostnames :
+      endswith(h, ".${var.cloudflare_domain}") && h != "${var.subdomain}.${var.cloudflare_domain}"
+    ])
+    error_message = <<-EOT
+       Each additional hostname must be a FQDN within the Cloudflare zone (${var.cloudflare_domain})
+       and must not duplicate the primary hostname.
+      EOT
+  }
 }
 
 variable "base_url" {
