@@ -166,6 +166,12 @@ moved {
   to   = cloudflare_dns_record.sspdns_intermediate
 }
 
+data "cloudflare_zone" "domain" {
+  filter = {
+    name = var.cloudflare_domain
+  }
+}
+
 /*
  * Create ECS role
  */
